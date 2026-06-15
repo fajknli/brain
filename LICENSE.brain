@@ -1,0 +1,17 @@
+THE BRAIN SYSTEM CONTRACT
+Copyright (c) 2026 fajknli
+
+THIS IS A CONTRACT, NOT A LICENSE.
+
+RULES:
+1. core.awk ≤ 50 lines. Core shall never bloat.
+2. All scripts use #!/bin/sh. Strict POSIX. No Bash extensions.
+3. Zero new dependencies. Only sh, awk, filesystem.
+4. The three-change questions are permanent. Do not alter.
+5. Preserve this notice in all copies.
+
+THE SOFTWARE IS PROVIDED AS-IS.
+
+Break the rules → break the spirit.
+
+2026-06-15 | SEALED

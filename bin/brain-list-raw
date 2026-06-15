@@ -1,0 +1,9 @@
+#!/bin/sh
+[ ! -f "$HOME/brain/cache/meta.tsv" ] && "$HOME/brain/bin/brain-index" >/dev/null
+
+TAB=$(printf '\t')
+# 1. 过滤掉已归档的笔记（遵守契约 3.2）
+# 2. 按 date 列（第 3 列）倒序排列，确保新建/提拔的笔记置顶
+awk -F'\t' '$5 != "archived"' "$HOME/brain/cache/meta.tsv" | \
+sort -t"$TAB" -k3 -r | \
+awk -F'\t' '{printf "%s\t%s\t%s\n", $1, $2, $6}'

@@ -1,0 +1,7 @@
+#!/bin/sh
+TAGS="$HOME/brain/cache/tags.tsv"
+META="$HOME/brain/cache/meta.tsv"
+awk -F'\t' -v t="$1" -v m="$META" -v tg="$TAGS" '
+FILENAME == tg { if($1 == t) valid[$2] = 1; next }
+FILENAME == m { if($1 in valid) print $1, $2 }
+' "$TAGS" "$META"

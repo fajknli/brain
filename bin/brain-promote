@@ -1,0 +1,32 @@
+#!/bin/sh
+src="$HOME/brain/inbox/$1"
+[ ! -f "$src" ] && { echo "Not found: $src"; exit 1; }
+
+if echo "$1" | grep -E '^U-[0-9]{8}T[0-9]{9}\.md$' >/dev/null; then
+    dest="$HOME/brain/atoms/$1"
+    [ -f "$dest" ] && { echo "FATAL: UID collision at $dest. Aborting."; exit 1; }
+    mv "$src" "$dest"
+    tmpfile="${dest}.$$.tmp"
+    awk '
+    /^---$/ { fm++; if (fm == 2 && !f) { print "status: live"; f = 1 } print; next }
+    /^status:/ && fm == 1 { sub(/.*/, "status: live"); f = 1 }
+    { print }
+    ' "$dest" > "$tmpfile" && mv "$tmpfile" "$dest"
+    echo "Promoted: $1"
+else
+    ts=$(date -u +%Y%m%dT%H%M%S)
+    ms=$(awk -v seed="$$" 'BEGIN{srand(seed); printf "%03d", rand()*1000}')
+    uid="U-${ts}${ms}"
+    dest="$HOME/brain/atoms/$uid.md"
+    now=$(date '+%Y-%m-%d %H:%M:%S')
+    awk -v u="$uid" -v d="$now" '
+    /^---$/ { fm++; if(fm==2){if(!uid_f)print "uid: " u; if(!date_f)print "date: " d; if(!status_f)print "status: live"} print; next }
+    fm==1 && /^uid:/ { print "uid: " u; uid_f=1; next }
+    fm==1 && /^date:/ { print "date: " d; date_f=1; next }
+    fm==1 && /^status:/ { sub(/.*/, "status: live"); status_f=1 }
+    { print }' "$src" > "$dest"
+    rm -f "$src"
+    echo "Promoted: $uid"
+fi
+
+"$HOME/brain/bin/brain-index" >/dev/null 2>&1

@@ -1,0 +1,6 @@
+#!/bin/sh
+# 抓取 inbox 中按时间排序最新的 .md 文件，并提拔它
+INBOX_DIR="$HOME/brain/inbox"
+
+latest=$(ls -t "$INBOX_DIR"/*.md 2>/dev/null | head -n 1)
+[ -n "$latest" ] && "$HOME/brain/bin/brain-promote" "$(basename "$latest")"

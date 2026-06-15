@@ -1,0 +1,35 @@
+#!/bin/sh
+META="$HOME/brain/cache/meta.tsv"
+LINKS="$HOME/brain/cache/links.tsv"
+
+if [ ! -f "$META" ]; then
+    "$HOME/brain/bin/brain-index" >/dev/null 2>&1
+fi
+
+awk -F'\t' -v u="$1" -v m="$META" '
+BEGIN {
+    while ((getline line < m) > 0) {
+        split(line, a, "\t")
+        meta[a[1]] = a[5]
+        title[a[1]] = a[2]
+    }
+    close(m)
+}
+FILENAME == m { next }
+
+$2 == u { in_uid[++in_c] = $1; in_rel[in_c] = $3 }
+$1 == u { out_uid[++out_c] = $2; out_rel[out_c] = $3 }
+END {
+    printf "=== %s %s ===\n入链:\n", u, title[u]
+    for (i = 1; i <= in_c && i <= 100; i++) {
+        st = (in_uid[i] in meta) ? (meta[in_uid[i]] == "archived" ? "[ARCHIVED]" : "[OK]") : "[DEAD]"
+        printf "  <- %s (%s) %s | %s\n", in_uid[i], in_rel[i], st, title[in_uid[i]]
+    }
+    if (in_c > 100) print "  ... (" in_c - 100 ") more"
+    print "出链:"
+    for (i = 1; i <= out_c && i <= 100; i++) {
+        st = (out_uid[i] in meta) ? (meta[out_uid[i]] == "archived" ? "[ARCHIVED]" : "[OK]") : "[DEAD]"
+        printf "  -> %s (%s) %s | %s\n", out_uid[i], out_rel[i], st, title[out_uid[i]]
+    }
+    if (out_c > 100) print "  ... (" out_c - 100 ") more"
+}' "$META" "$LINKS"

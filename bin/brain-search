@@ -1,0 +1,9 @@
+#!/bin/sh
+META="$HOME/brain/cache/meta.tsv"
+[ ! -f "$META" ] && "$HOME/brain/bin/brain-index" >/dev/null
+grep -rl --include="*.md" "$*" "$HOME/brain/atoms/" | \
+awk '{ n=split($0,arr,"/"); uid=arr[n]; sub(/\.md$/,"",uid); uids[uid]=1 }' | \
+awk -F'\t' -v m="$META" '
+FILENAME=="-" { uids[$0]=1; next }
+FILENAME==m { if ($1 in uids) print $1, $2 }
+' - "$META"

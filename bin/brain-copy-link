@@ -1,0 +1,9 @@
+#!/bin/sh
+TARGET_UID="$1"
+[ -z "$TARGET_UID" ] && exit 1
+
+LINK_STR="+link: $TARGET_UID updates"
+
+printf '%s\n' "$LINK_STR" | wl-copy 2>/dev/null || \
+printf '%s\n' "$LINK_STR" | xclip -selection clipboard 2>/dev/null || \
+printf '%s\n' "$LINK_STR" | pbcopy 2>/dev/null

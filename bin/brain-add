@@ -1,0 +1,17 @@
+#!/bin/sh
+TITLE="$FZF_QUERY"
+[ -z "$TITLE" ] && exit 0
+
+ATOM_DIR="$HOME/brain/atoms"
+ts=$(date -u +%Y%m%dT%H%M%S)
+ms=$(awk -v seed="$$" 'BEGIN{srand(seed); printf "%03d", rand()*1000}')
+uid="U-${ts}${ms}"
+file="$ATOM_DIR/$uid.md"
+now=$(date '+%Y-%m-%d %H:%M:%S')
+
+CLEAN_TITLE=$(printf '%s' "$TITLE" | awk '{gsub(/\t/," "); gsub(/[\r\n]/," "); print}')
+
+printf '%s\n' "---" "uid: $uid" "title: $CLEAN_TITLE" "date: $now" "type: note" "status: live" "+tag: inbox" "---" > "$file"
+
+"$HOME/brain/bin/brain-index" >/dev/null 2>&1
+${EDITOR:-vi} "$file"

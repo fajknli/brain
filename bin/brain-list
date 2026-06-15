@@ -1,0 +1,3 @@
+#!/bin/sh
+[ ! -f "$HOME/brain/cache/meta.tsv" ] && "$HOME/brain/bin/brain-index" >/dev/null
+awk -F'\t' '{print $1, $2}' "$HOME/brain/cache/meta.tsv"

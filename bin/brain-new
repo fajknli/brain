@@ -1,0 +1,13 @@
+#!/bin/sh
+ATOM_DIR="$HOME/brain/atoms"
+ts=$(date -u +%Y%m%dT%H%M%S)
+ms=$(awk -v seed="$$" 'BEGIN{srand(seed); printf "%03d", rand()*1000}')
+uid="U-${ts}${ms}"
+file="$ATOM_DIR/$uid.md"
+now=$(date '+%Y-%m-%d %H:%M:%S')
+
+printf '%s\n' "---" "uid: $uid" "title:" "date: $now" "type: note" "status: live" "+tag: inbox" "---" > "$file"
+
+${EDITOR:-vi} "$file"
+
+"$HOME/brain/bin/brain-index" >/dev/null 2>&1

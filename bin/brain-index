@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+BRAIN_ROOT="$HOME/brain"
+BRAIN_ROOT="${BRAIN_ROOT%/}"
+export BRAIN_ROOT
+export BRAIN_TMP="$BRAIN_ROOT/cache/.tmp"
+
+mkdir -p "$BRAIN_TMP"
+: > "$BRAIN_TMP/m"
+: > "$BRAIN_TMP/l"
+: > "$BRAIN_TMP/t"
+: > "$BRAIN_TMP/c"
+
+find "$BRAIN_ROOT/atoms" -type f -name "*.md" -size +0c -exec \
+    awk -f "$BRAIN_ROOT/bin/core.awk" {} +
+
+mv "$BRAIN_TMP/m" "$BRAIN_ROOT/cache/meta.tsv"
+mv "$BRAIN_TMP/l" "$BRAIN_ROOT/cache/links.tsv"
+mv "$BRAIN_TMP/t" "$BRAIN_ROOT/cache/tags.tsv"
+mv "$BRAIN_TMP/c" "$BRAIN_ROOT/conflicts.report"
+rm -rf "$BRAIN_TMP"
+
+[ -s "$BRAIN_ROOT/conflicts.report" ] && echo "Unresolved conflicts." || echo "Index rebuilt."

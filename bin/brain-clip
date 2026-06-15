@@ -1,0 +1,16 @@
+#!/bin/sh
+INBOX="$HOME/brain/inbox"
+mkdir -p "$INBOX"
+
+clip=$(wl-paste 2>/dev/null || xclip -o -selection clipboard 2>/dev/null || pbpaste 2>/dev/null)
+[ -z "$clip" ] && { echo "Empty"; exit 1; }
+
+ts=$(date -u +%Y%m%dT%H%M%S)
+ms=$(awk -v seed="$$" 'BEGIN{srand(seed); printf "%03d", rand()*1000}')
+uid="U-${ts}${ms}"
+file="$INBOX/$uid.md"
+
+printf '%s\n' "---" "uid: $uid" "title: Clip $(date +%Y-%m-%d)" "date: $(date '+%Y-%m-%d %H:%M:%S')" "type: note" "status: live" "+tag: inbox" "---" "" > "$file"
+printf '%s\n' "$clip" >> "$file"
+
+echo "Clipped: $uid"
