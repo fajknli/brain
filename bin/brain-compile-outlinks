@@ -1,0 +1,30 @@
+#!/bin/sh
+TARGET_UID="$1"
+[ -z "$TARGET_UID" ] && exit 1
+
+ROOT="${BRAIN_ROOT:-$HOME/brain}"
+LINKS="$ROOT/cache/links.tsv"
+META="$ROOT/cache/meta.tsv"
+
+# 1. 先尝试获取所有出链的 Title 和 Path，存入变量
+content=$(awk -F'\t' -v u="$TARGET_UID" '
+FILENAME == ARGV[1] && $1 == u {targets[$2]=1; next}
+FILENAME == ARGV[2] && ($1 in targets) {print $1 "\t" $2 "\t" $6}
+' "$LINKS" "$META")
+
+# 2. 防呆拦截：如果变量为空，说明没有出链，直接提示并退出，不启动 less
+if [ -z "$content" ]; then
+    printf "\n当前笔记没有出链 (Outlinks)，无法进行大纲拼合。\n"
+    sleep 1.5
+    exit 0
+fi
+
+# 3. 有出链，正常执行拼合与 less 渲染
+printf '%s\n' "$content" | \
+while IFS="$(printf '\t')" read -r uid title rel_path; do
+    printf '\n\n================================================================\n'
+    printf '[%s] %s\n' "$uid" "$title"
+    printf '================================================================\n\n'
+    
+    awk 'BEGIN{fm=0} /^---$/{fm++; if(fm==2) next} fm>=2 {print}' "$ROOT/$rel_path"
+done | less -R

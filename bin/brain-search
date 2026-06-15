@@ -4,6 +4,9 @@ META="$HOME/brain/cache/meta.tsv"
 grep -rl --include="*.md" "$*" "$HOME/brain/atoms/" | \
 awk '{ n=split($0,arr,"/"); uid=arr[n]; sub(/\.md$/,"",uid); uids[uid]=1 }' | \
 awk -F'\t' -v m="$META" '
-FILENAME=="-" { uids[$0]=1; next }
-FILENAME==m { if ($1 in uids) print $1, $2 }
+BEGIN { meta_file = m }
+# 只拦截 meta 文件
+FILENAME == meta_file { if ($1 in uids) print $1, $2; next }
+# 剩下的行（grep 传来的 UID）全部收入 uids
+{ uids[$0]=1 }
 ' - "$META"

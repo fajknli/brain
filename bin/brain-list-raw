@@ -1,9 +1,27 @@
 #!/bin/sh
 [ ! -f "$HOME/brain/cache/meta.tsv" ] && "$HOME/brain/bin/brain-index" >/dev/null
 
+META="$HOME/brain/cache/meta.tsv"
+TAGS="$HOME/brain/cache/tags.tsv"
 TAB=$(printf '\t')
-# 1. 过滤掉已归档的笔记（遵守契约 3.2）
-# 2. 按 date 列（第 3 列）倒序排列，确保新建/提拔的笔记置顶
-awk -F'\t' '$5 != "archived"' "$HOME/brain/cache/meta.tsv" | \
+
+# 1. 过滤 archived，提取关键列，并按 Date (第3列) 倒序排序
+# 输出流格式: UID \t Title \t Date \t Type \t Path
+awk -F'\t' '$5 != "archived" {print $1, $2, $3, $4, $6}' OFS='\t' "$META" | \
 sort -t"$TAB" -k3 -r | \
-awk -F'\t' '{printf "%s\t%s\t%s\n", $1, $2, $6}'
+# 2. 与 tags.tsv 进行轻量级 Join，并格式化最终输出
+awk -F'\t' '
+BEGIN { tags_file = ARGV[1] }
+# 只拦截 tags 文件
+FILENAME == tags_file {
+    if (tags[$2] == "") tags[$2] = $1
+    else tags[$2] = tags[$2] ", " $1
+    next
+}
+# 剩下的所有行（无论 FILENAME 是 "-" 还是 ""）都按标准输入处理
+{
+    uid = $1; title = $2; type = $4; path = $5
+    tag_str = (uid in tags) ? " [" tags[uid] "]" : ""
+    printf "%s\t%s %s (%s)\t%s\n", uid, title, tag_str, type, path
+}
+' "$TAGS" -

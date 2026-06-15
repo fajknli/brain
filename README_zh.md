@@ -1,6 +1,5 @@
 # Brain System
 
-核心：47 行 (`core.awk`) | 总计：约 240 行
 Shebang：`#!/bin/sh` | 纯 POSIX，无 Bash 扩展。
 
 > Awk = 数据库，管道 = 总线，纯文本 = 真理
@@ -33,23 +32,26 @@ echo 'export PATH="$HOME/brain/bin:$PATH"' >> ~/.profile
 source ~/.profile
 ```
 
-## 命令参考
+### 命令参考 (Command Reference)
 
-| 命令 | 描述 |
+| 命令 | 功能说明 |
 | :--- | :--- |
-| `brain` | 启动基于 FZF 的交互式 TUI。 |
-| `brain-add` | 使用当前 FZF 查询字符串创建新笔记。 |
-| `brain-new` | 生成空白笔记模板并在 `$EDITOR` 中打开。 |
-| `brain-clip` | 读取系统剪贴板并将其保存为 `inbox/` 中的新笔记。 |
-| `brain-archive` | 将笔记状态更新为 `archived`，使其从默认查询中隐藏。 |
-| `brain-promote` | 将笔记从 `inbox/` 安全移动至 `atoms/`，包含 UID 冲突检查。 |
-| `brain-promote-latest` | 自动提拔 `inbox/` 中最近修改的笔记。 |
-| `brain-context <uid>` | 显示特定笔记的入链和出链，包含目标状态。 |
-| `brain-search <kw>` | 使用 AND 逻辑在 `atoms/` 中执行全文搜索。 |
-| `brain-tag <tag>` | 检索与特定标签关联的所有笔记。 |
-| `brain-list` | 输出所有活跃笔记的纯文本列表（UID 和标题）。 |
-| `brain-index` | 从 `atoms/` 目录原子化重建所有缓存索引。 |
-| `brain-copy-link` | 将标准化的链接模板（如 `+link: <UID> updates`）复制到剪贴板。 |
+| **`brain`** | 启动基于 FZF 的交互式 TUI 界面。<br>*(快捷键: `Enter`:编辑, `Ctrl-D`:归档, `Ctrl-N`:快速新建, `Ctrl-V`:剪藏, `Alt-I`:提拔最新, `Ctrl-Y`:复制链接, `Ctrl-A`:多选拼合, `Ctrl-P`:大纲拼合)* |
+| **`brain-add`** | 使用当前 FZF 搜索框中的查询字符串，快速创建新笔记。 |
+| **`brain-new`** | 生成空白笔记模板，并直接在 `$EDITOR` 中打开。 |
+| **`brain-clip`** | 读取系统剪贴板内容，并将其保存为 `inbox/` 目录下的新笔记。 |
+| **`brain-archive`** | 将笔记状态更新为 `archived`（归档），使其从默认查询列表中隐藏。 |
+| **`brain-promote`** | 将笔记从 `inbox/` 安全迁移至 `atoms/`，内置严格的 UID 冲突检测机制。 |
+| **`brain-promote-latest`** | 自动提拔 `inbox/` 中最近修改的最新笔记。 |
+| **`brain-context <uid>`** | 显示特定笔记的入链与出链，并包含目标笔记的实时状态（`[OK]` / `[ARCHIVED]` / `[DEAD]`）。 |
+| **`brain-search <kw>`** | 使用 AND 逻辑，在 `atoms/` 目录中执行全文深度搜索。 |
+| **`brain-tag <tag>`** | 检索所有关联了指定标签的笔记。 |
+| **`brain-list`** | 输出所有活跃笔记的纯文本列表（包含 UID 和标题）。 |
+| **`brain-list-raw`** | 输出原始、已排序的 TSV 数据（已过滤 `archived`），专供 FZF 消费（内部/核心组件）。 |
+| **`brain-index`** | 从 `atoms/` 目录原子化地重建所有缓存索引（`meta`, `links`, `tags`）。 |
+| **`brain-copy-link`** | 将标准化的链接模板（如 `+link: <UID> updates`）静默复制到系统剪贴板。 |
+| **`brain-compile-selected`** | 将 FZF 中手动多选的多篇笔记，拼接并渲染为单一、纯净的阅读视图（`Ctrl-A`）。 |
+| **`brain-compile-outlinks`** | 严格按照 `+link` 的书写顺序，将当前笔记的所有出链笔记拼接并渲染为长文视图（`Ctrl-P`）。 |
 
 ## 笔记规范
 

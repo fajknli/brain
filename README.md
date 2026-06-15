@@ -1,6 +1,5 @@
 # Brain System
 
-Core: 47 lines (`core.awk`) | Total: ~240 lines  
 Shebang: `#!/bin/sh` | Pure POSIX, no Bash extensions.
 
 > Awk = Database, Pipeline = Bus, Plaintext = Truth
@@ -33,23 +32,26 @@ echo 'export PATH="$HOME/brain/bin:$PATH"' >> ~/.profile
 source ~/.profile
 ```
 
-## Command Reference
+### Command Reference
 
 | Command | Description |
 | :--- | :--- |
-| `brain` | Launches the FZF-based interactive TUI. |
-| `brain-add` | Creates a new note using the current FZF query string. |
-| `brain-new` | Generates a blank note template and opens it in `$EDITOR`. |
-| `brain-clip` | Reads the system clipboard and saves it as a new note in `inbox/`. |
-| `brain-archive` | Updates a note's status to `archived`, hiding it from default queries. |
-| `brain-promote` | Safely moves a note from `inbox/` to `atoms/` with UID collision checks. |
-| `brain-promote-latest` | Automatically promotes the most recently modified note in `inbox/`. |
-| `brain-context <uid>` | Displays inbound and outbound links for a specific note, including target status. |
-| `brain-search <kw>` | Performs a full-text search across `atoms/` using AND logic. |
-| `brain-tag <tag>` | Retrieves all notes associated with a specific tag. |
-| `brain-list` | Outputs a plain-text list of all active notes (UID and title). |
-| `brain-index` | Rebuilds all cache indexes atomically from the `atoms/` directory. |
-| `brain-copy-link` | Copies a standardized link template (e.g., `+link: <UID> updates`) to the clipboard. |
+| **`brain`** | Launches the FZF-based interactive TUI.<br>*(Shortcuts: `Enter`:Edit, `Ctrl-D`:Archive, `Ctrl-N`:QuickNew, `Ctrl-V`:Clip, `Alt-I`:Promote, `Ctrl-Y`:CopyLink, `Ctrl-A`:CompileSelected, `Ctrl-P`:CompileOutline)* |
+| **`brain-add`** | Creates a new note using the current FZF query string. |
+| **`brain-new`** | Generates a blank note template and opens it in `$EDITOR`. |
+| **`brain-clip`** | Reads the system clipboard and saves it as a new note in `inbox/`. |
+| **`brain-archive`** | Updates a note's status to `archived`, hiding it from default queries. |
+| **`brain-promote`** | Safely moves a note from `inbox/` to `atoms/` with UID collision checks. |
+| **`brain-promote-latest`** | Automatically promotes the most recently modified note in `inbox/`. |
+| **`brain-context <uid>`** | Displays inbound and outbound links for a specific note, including target status (`[OK]`/`[ARCHIVED]`/`[DEAD]`). |
+| **`brain-search <kw>`** | Performs a full-text search across `atoms/` using AND logic. |
+| **`brain-tag <tag>`** | Retrieves all notes associated with a specific tag. |
+| **`brain-list`** | Outputs a plain-text list of all active notes (UID and title). |
+| **`brain-list-raw`** | Outputs raw, sorted TSV data (filtered `archived`) for FZF consumption (Internal/Core). |
+| **`brain-index`** | Rebuilds all cache indexes (`meta`, `links`, `tags`) atomically from the `atoms/` directory. |
+| **`brain-copy-link`** | Copies a standardized link template (e.g., `+link: <UID> updates`) to the system clipboard. |
+| **`brain-compile-selected`** | Concatenates and renders multiple FZF-selected notes into a single, clean reading view (`Ctrl-A`). |
+| **`brain-compile-outlinks`** | Concatenates and renders all out-linked notes of the current note in strict sequential order (`Ctrl-P`). |
 
 ## Note Specification
 

@@ -1,0 +1,24 @@
+#!/bin/sh
+# 接收 fzf 传来的多个 UID (通过 {+1} 传递)
+[ $# -eq 0 ] && exit 1
+
+ROOT="${BRAIN_ROOT:-$HOME/brain}"
+META="$ROOT/cache/meta.tsv"
+
+for uid in "$@"; do
+    # 从 meta.tsv 提取 Title ($2) 和 Path ($6)
+    info=$(awk -F'\t' -v u="$uid" '$1==u {print $2 "\t" $6; exit}' "$META")
+    [ -z "$info" ] && continue
+    
+    title=$(printf '%s' "$info" | cut -f1)
+    rel_path=$(printf '%s' "$info" | cut -f2)
+    
+    # 1. 打印清晰的章节标题：[UID] Title
+    printf '\n\n================================================================\n'
+    printf '[%s] %s\n' "$uid" "$title"
+    printf '================================================================\n\n'
+    
+    # 2. 剥离 Frontmatter，只打印纯净正文
+    # 逻辑：遇到第一个 --- fm=1，遇到第二个 --- fm=2 并跳过该行，之后 fm>=2 全部打印
+    awk 'BEGIN{fm=0} /^---$/{fm++; if(fm==2) next} fm>=2 {print}' "$ROOT/$rel_path"
+done | less -R
